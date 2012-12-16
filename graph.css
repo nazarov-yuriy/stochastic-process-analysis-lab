@@ -5,12 +5,9 @@ a#testbutton, a#testbutton:visited {
     padding:10px 0;
     text-align:center;
     border:1px solid #000;
-    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.8);
     font-weight:bold;
     text-transform:uppercase;
     border-radius: 5px;
-    -moz-border-radius: 5px;
-    -webkit-border-radius: 5px;
     color:#000;
     text-decoration: none;
     opacity:.85;
@@ -23,14 +20,11 @@ a#testbutton:hover {
 
 a#testbutton:active {
     padding:11px 0 9px;
-    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.8);
 }
 
 input, select, textarea {
     background-color: #fcfcfc;
     box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
     border: 1px solid #cccccc;
     font-size: 1em;
     padding: 0.2em 0.4em;
