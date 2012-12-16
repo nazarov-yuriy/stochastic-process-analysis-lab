@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="http://jsxgraph.uni-bayreuth.de/distrib/jsxgraph.css" />
+    <script type="text/javascript" src="http://jsxgraph.uni-bayreuth.de/distrib/jsxgraphcore.js"></script>
+    <script type="text/javascript" src="graph.js"></script>
+    <link rel="stylesheet" type="text/css" href="graph.css" />
+    <title></title>
+</head>
+<body>
+
+    <div id="params" style="float:left; padding: 10px">
+        <form name="params_form" id="params_form" action="" onsubmit="return replot();">
+            <label for="param_a">Parameter A:</label>
+            <input id="param_a" name="param_a"/>
+            <br/>
+
+            <label for="param_b">Parameter B:</label>
+            <input id="param_b" name="param_b"/>
+            <br/>
+
+            <label for="param_c">Parameter C:</label>
+            <input id="param_c" name="param_c"/>
+            <br/>
+
+            <a id="testbutton" href="#" onclick="return replot();">Find Out More</a>
+        </form>
+    </div>
+    <div id="jxgbox" class="jxgbox" style="width:500px; height:500px;">
+
+    </div>
+
+</body>
+</html>
