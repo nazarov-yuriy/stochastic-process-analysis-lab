@@ -25,8 +25,7 @@ function generate_process(){
 function dist_func(x){
     var sigma = document.forms['params_form'].param_sigm.value;
     var mu = document.forms['params_form'].param_mu.value;
-    var ret = Math.exp( -(x-mu)*(x-mu)/(2*sigma*sigma) )/ (sigma * Math.sqrt(2 * Math.PI));
-    return ret;
+    return Math.exp( -(x-mu)*(x-mu)/(2*sigma*sigma) )/ (sigma * Math.sqrt(2 * Math.PI));
 }
 
 function dens_func(x){
