@@ -1,4 +1,4 @@
-a#testbutton, a#testbutton:visited {
+a#replot, a#replot:visited {
     display:block;
     background-color: #999;
     width: 100%;
@@ -6,20 +6,30 @@ a#testbutton, a#testbutton:visited {
     text-align:center;
     border:1px solid #000;
     font-weight:bold;
-    text-transform:uppercase;
     border-radius: 5px;
     color:#000;
     text-decoration: none;
     opacity:.85;
 }
 
-a#testbutton:hover {
+a#replot:hover {
     border-color:#000;
     background-color: #AAA;
 }
 
-a#testbutton:active {
+a#replot:active {
     padding:11px 0 9px;
+}
+
+a.tab, a.tab:visited {
+    display:inline-block;
+    background-color: #999;
+    width: 200px;
+    height: 40px;
+    font-size: 10pt;
+    text-align:center;
+    border:1px solid #000;
+    color:#000;
 }
 
 input, select, textarea {

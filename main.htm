@@ -1,7 +1,8 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-        "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<!DOCTYPE html>
+<html class="client-js" lang="ru" dir="ltr" xmlns="http://www.w3.org/1999/html">
 <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
     <link rel="stylesheet" type="text/css" href="http://jsxgraph.uni-bayreuth.de/distrib/jsxgraph.css" />
     <script type="text/javascript" src="http://jsxgraph.uni-bayreuth.de/distrib/jsxgraphcore.js"></script>
     <script type="text/javascript" src="graph.js"></script>
@@ -10,25 +11,36 @@
 </head>
 <body>
 
-    <div id="params" style="float:left; padding: 10px">
+    <div id="params" style="float:left; width: 200px; padding: 10px">
         <form name="params_form" id="params_form" action="" onsubmit="return replot();">
-            <label for="param_a">Parameter A:</label>
-            <input id="param_a" name="param_a"/>
+            <label for="process_type_select">Выберите распределение:</label>
+            <select id="process_type_select">
+                <option value="uniform">Равномерное</option>
+                <option value="normal">Нормальное</option>
+            </select>
             <br/>
 
-            <label for="param_b">Parameter B:</label>
-            <input id="param_b" name="param_b"/>
+            <label for="param_sigm">sigma:</label>
+            <input id="param_sigm" name="param_sigm" style="width: 100px;" value="1"/>
             <br/>
 
-            <label for="param_c">Parameter C:</label>
-            <input id="param_c" name="param_c"/>
+            <label for="param_mu">mu:</label>
+            <input id="param_mu" name="param_mu" style="width: 100px;" value="0"/>
             <br/>
 
-            <a id="testbutton" href="#" onclick="return replot();">Find Out More</a>
+            <a id="replot" href="#" onclick="return replot();">Построить</a>
         </form>
     </div>
-    <div id="jxgbox" class="jxgbox" style="width:500px; height:500px;">
+    <div id="plots">
+        <a id="process_btn" href="#" class="tab" onclick="return show_process();">Процесс
+        </a><a id="dist_func_btn" href="#" class="tab" onclick="return show_dist_func();">Функция распределения
+        </a><a id="dens_func_btn" href="#" class="tab" onclick="return show_dens_func();">Плотность распределения
+        </a><a id="histogram_btn" href="#" class="tab" onclick="return show_histogram();">Гистограмма</a>
 
+        <div id="process_div" class="jxgbox" style="width:800px; height:400px;"></div>
+        <div id="dist_func_div" class="jxgbox" style="width:800px; height:400px; display: none;"></div>
+        <div id="dens_func_div" class="jxgbox" style="width:800px; height:400px; display: none;"></div>
+        <div id="histogram_div" class="jxgbox" style="width:800px; height:400px; display: none;"></div>
     </div>
 
 </body>
