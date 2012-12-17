@@ -17,11 +17,61 @@
 
 //==== stupid params show/hide logic
 
+var div_N;
+var div_a;
+var div_b;
+var div_lambda;
+var div_sigma;
+var div_mu;
+
+function show(div){
+    div.style.display = '';
+}
+
+function hide(div){
+    div.style.display = 'none';
+}
+
 function params_show(select){
     switch(select.value){
-        case 'uniform':   ;
-        case 'normal':    ;
-        case 'lognormal': ;
-        case 'exp':       ;
+        case 'uniform':
+            show(div_a);
+            show(div_b);
+            hide(div_lambda);
+            hide(div_sigma);
+            hide(div_mu);
+            break;
+        case 'normal':
+            hide(div_a);
+            hide(div_b);
+            hide(div_lambda);
+            show(div_sigma);
+            show(div_mu);
+            break;
+        case 'lognormal':
+            hide(div_a);
+            hide(div_b);
+            hide(div_lambda);
+            show(div_sigma);
+            show(div_mu);
+            break;
+        case 'exp':
+            hide(div_a);
+            hide(div_b);
+            show(div_lambda);
+            hide(div_sigma);
+            hide(div_mu);
+            break;
     }
 }
+
+function params_load(){
+    div_N      = document.getElementById('div_N');
+    div_a      = document.getElementById('div_a');
+    div_b      = document.getElementById('div_b');
+    div_lambda = document.getElementById('div_lambda');
+    div_sigma  = document.getElementById('div_sigma');
+    div_mu     = document.getElementById('div_mu');
+}
+
+document.addEventListener("DOMContentLoaded", params_load, false);

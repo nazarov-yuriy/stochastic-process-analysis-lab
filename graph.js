@@ -34,7 +34,7 @@ var y = [];
 //==== functions that produce process data values ====
 function generate_uniform(n,a,b){
     for(var i = 0 ; i<n;i++){
-        y[i] = Math.random();
+        y[i] = a+Math.random(b-a);
     }
 }
 
@@ -79,16 +79,22 @@ function fillProcess(){
     var d1 = new Date();
     var start = d1.getTime();
 
-    var n      = form.param_N.value;
-    var sigma  = form.param_sigm.value;
-    var lambda = form.param_lambda.value;
-    var mu     = form.param_mu.value;
+    var n      = parseInt(form.param_N.value);
+    var a      = parseFloat(form.param_a.value);
+    var b      = parseFloat(form.param_b.value);
+    var sigma  = parseFloat(form.param_sigma.value);
+    var lambda = parseFloat(form.param_lambda.value);
+    var mu     = parseFloat(form.param_mu.value);
 
     switch(form.process_type_select.value){
-        case 'uniform':   generate_uniform(n, 0, 1);
+        case 'uniform':   generate_uniform(n, a, b);
+            break;
         case 'normal':    generate_norm(n,sigma, mu);
+            break;
         case 'lognormal': generate_lognorm(n, sigma, mu);
+            break;
         case 'exp':       generate_exp(n, lambda);
+            break;
     }
 
     for(var i = 0; i < n; i++){

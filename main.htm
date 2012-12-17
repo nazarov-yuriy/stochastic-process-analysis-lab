@@ -25,21 +25,35 @@
             </select>
             <br/>
 
-            <label for="param_lambda">&#955;:</label>
+            <div id="div_N">
+                <label for="param_N">Размер выборки:</label>
+                <input id="param_N" name="param_N" style="width: 100px;" value="100"/>
+            </div>
+
+            <div id="div_a">
+                <label for="param_a">a:</label>
+                <input id="param_a" name="param_a" style="width: 100px;" value="0"/>
+            </div>
+
+            <div id="div_b">
+                <label for="param_b">b:</label>
+                <input id="param_b" name="param_b" style="width: 100px;" value="1"/>
+            </div>
+
+            <div id="div_lambda" style="display: none">
+                <label for="param_lambda" >&#955;:</label>
                 <input id="param_lambda" name="param_lambda" style="width: 100px;" value="1"/>
-            <br/>
+            </div>
 
-            <label for="param_sigm">&#963;:</label>
-            <input id="param_sigm" name="param_sigm" style="width: 100px;" value="1"/>
-            <br/>
+            <div id="div_sigma" style="display: none">
+                <label for="param_sigma">&#963;:</label>
+                <input id="param_sigma" name="param_sigma" style="width: 100px;" value="1"/>
+            </div>
 
-            <label for="param_mu">&#956;:</label>
-            <input id="param_mu" name="param_mu" style="width: 100px;" value="0"/>
-            <br/>
-
-            <label for="param_N">Размер выборки:</label>
-            <input id="param_N" name="param_N" style="width: 100px;" value="0"/>
-            <br/>
+            <div id="div_mu" style="display: none">
+                <label for="param_mu">&#956;:</label>
+                <input id="param_mu" name="param_mu" style="width: 100px;" value="0"/>
+            </div>
 
             <a id="replot" href="#" onclick="return replot();">Построить</a>
             <br/>
