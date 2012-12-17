@@ -1,64 +1,127 @@
 /**
- * Created with JetBrains WebStorm.
- * User: firefish
- * Date: 16/12/12
- * Time: 20:21
- * To change this template use File | Settings | File Templates.
+ Copyright (C) 2012 Nazarov Yuriy
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+ documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+ rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
+ persons to whom the Software is furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+ Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-document.addEventListener("DOMContentLoaded", load, false);
-var a = 1;
+
+//==== graph boards ====
 var process_board;
 var dist_func_board;
 var dens_func_board;
 var histogram_board;
 
-var x = [];
+//==== some useful DOM elements ====
+var form;
+var status;
+
+//==== data for graph ====
+var x_graph = [];
+var y_graph = [];
+//==== process data ====
 var y = [];
 
-function generate_process(){
-    for(var i = 0 ; i<300;i++){
-        x[i] = i;
+//==== functions that produce process data values ====
+function generate_uniform(n,a,b){
+    for(var i = 0 ; i<n;i++){
         y[i] = Math.random();
     }
 }
 
+function generate_norm(n,sigma,mu){
+    for(var i = 0 ; i<n;i++){
+        y[i] = Math.random();
+    }
+}
+
+function generate_lognorm(n,sigma,mu){
+    for(var i = 0 ; i<n;i++){
+        y[i] = Math.random();
+    }
+}
+
+function generate_exp(n,lambda){
+    for(var i = 0 ; i<n;i++){
+        y[i] = Math.random();
+    }
+}
+
+//==== functions for graphs ====
 function dist_func(x){
-    var sigma = document.forms['params_form'].param_sigm.value;
-    var mu = document.forms['params_form'].param_mu.value;
-    return Math.exp( -(x-mu)*(x-mu)/(2*sigma*sigma) )/ (sigma * Math.sqrt(2 * Math.PI));
+    return 0;
+    //var sigma = form.param_sigm.value;
+    //var mu = form.param_mu.value;
+    //return Math.exp( -(x-mu)*(x-mu)/(2*sigma*sigma) )/ (sigma * Math.sqrt(2 * Math.PI));
 }
 
 function dens_func(x){
-    return a * Math.cos(x)*Math.cos(x);
+    return 0;
+    //return y[Math.floor(x)];
 }
 
 function histogram(x){
-    return a * Math.sin(x)*Math.sin(x);
+    return 0;
+    //return a * Math.sin(x)*Math.sin(x);
 }
 
-function load(){
-    generate_process();
+//==== other logic ===
+function fillProcess(){
+    var d1 = new Date();
+    var start = d1.getTime();
 
-    process_board = JXG.JSXGraph.initBoard('process_div', {boundingbox:[0,1,300,-0.1], axis:true});
-    process_board.create('curve', [x,y]);
+    var n      = form.param_N.value;
+    var sigma  = form.param_sigm.value;
+    var lambda = form.param_lambda.value;
+    var mu     = form.param_mu.value;
+
+    switch(form.process_type_select.value){
+        case 'uniform':   generate_uniform(n, 0, 1);
+        case 'normal':    generate_norm(n,sigma, mu);
+        case 'lognormal': generate_lognorm(n, sigma, mu);
+        case 'exp':       generate_exp(n, lambda);
+    }
+
+    for(var i = 0; i < n; i++){
+        x_graph[i] = i;
+        y_graph[i] = y[i];
+    }
+
+    var d2 = new Date();
+    var end = d2.getTime();
+    status.textContent = "Generated in "+(end-start)+" ms.";
+}
+
+function graph_load(){
+    form = document.forms['params_form'];
+    status = document.getElementById('status');
+
+    process_board = JXG.JSXGraph.initBoard('process_div', {boundingbox:[0,1,100,-0.1], axis:true});
+    process_board.create('curve', [x_graph,y_graph]);
 
     dist_func_board = JXG.JSXGraph.initBoard('dist_func_div', {boundingbox:[-5,1,5,-0.1], axis:true});
     dist_func_board.create('functiongraph', [dist_func,-4,4]);
 
-    dens_func_board = JXG.JSXGraph.initBoard('dens_func_div', {boundingbox:[-4,4,4,-4], keepaspectratio: true, axis:true});
-    dens_func_board.create('functiongraph', [dens_func,-4,4]);
+    dens_func_board = JXG.JSXGraph.initBoard('dens_func_div', {boundingbox:[0,1,10000,-0.1], axis:true});
+    dens_func_board.create('functiongraph', [dens_func,0,10000]);
 
-    histogram_board = JXG.JSXGraph.initBoard('histogram_div', {boundingbox:[-4,4,4,-4], keepaspectratio: true, axis:true});
+    histogram_board = JXG.JSXGraph.initBoard('histogram_div', {boundingbox:[-4,4,4,-4], axis:true});
     histogram_board.create('functiongraph', [histogram,-4,4]);
-
-    process_div   = document.getElementById("process_div");
-    dist_func_div = document.getElementById("dist_func_div");
-    dens_func_div = document.getElementById("dens_func_div");
-    histogram_div = document.getElementById("histogram_div");
 }
 
+//==== "generate" button handler. Generate and update graphs.
 function replot(){
-    generate_process();
+    fillProcess();
+    generate_downloadlink();
     process_board.update();
     dist_func_board.update();
     dens_func_board.update();
@@ -66,35 +129,4 @@ function replot(){
     return false;
 }
 
-var process_div;
-var dist_func_div;
-var dens_func_div;
-var histogram_div;
-
-function show_process(){
-    process_div.style.display = "block";
-    dist_func_div.style.display = "none";
-    dens_func_div.style.display = "none";
-    histogram_div.style.display = "none";
-}
-
-function show_dist_func(){
-    process_div.style.display = "none";
-    dist_func_div.style.display = "block";
-    dens_func_div.style.display = "none";
-    histogram_div.style.display = "none";
-}
-
-function show_dens_func(){
-    process_div.style.display = "none";
-    dist_func_div.style.display = "none";
-    dens_func_div.style.display = "block";
-    histogram_div.style.display = "none";
-}
-
-function show_histogram(){
-    process_div.style.display = "none";
-    dist_func_div.style.display = "none";
-    dens_func_div.style.display = "none";
-    histogram_div.style.display = "block";
-}
+document.addEventListener("DOMContentLoaded", graph_load, false);

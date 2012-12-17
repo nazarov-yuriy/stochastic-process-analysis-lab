@@ -5,7 +5,10 @@
 
     <link rel="stylesheet" type="text/css" href="http://jsxgraph.uni-bayreuth.de/distrib/jsxgraph.css" />
     <script type="text/javascript" src="http://jsxgraph.uni-bayreuth.de/distrib/jsxgraphcore.js"></script>
+    <script type="text/javascript" src="files.js"></script>
     <script type="text/javascript" src="graph.js"></script>
+    <script type="text/javascript" src="tabs.js"></script>
+    <script type="text/javascript" src="params.js"></script>
     <link rel="stylesheet" type="text/css" href="graph.css" />
     <title></title>
 </head>
@@ -14,21 +17,35 @@
     <div id="params" style="float:left; width: 200px; padding: 10px">
         <form name="params_form" id="params_form" action="" onsubmit="return replot();">
             <label for="process_type_select">Выберите распределение:</label>
-            <select id="process_type_select">
+            <select id="process_type_select" name="process_type_select" onchange="params_show(this);">
                 <option value="uniform">Равномерное</option>
                 <option value="normal">Нормальное</option>
+                <option value="lognormal">Логнормальное</option>
+                <option value="exp">Экспоненциальное</option>
             </select>
             <br/>
 
-            <label for="param_sigm">sigma:</label>
+            <label for="param_lambda">&#955;:</label>
+                <input id="param_lambda" name="param_lambda" style="width: 100px;" value="1"/>
+            <br/>
+
+            <label for="param_sigm">&#963;:</label>
             <input id="param_sigm" name="param_sigm" style="width: 100px;" value="1"/>
             <br/>
 
-            <label for="param_mu">mu:</label>
+            <label for="param_mu">&#956;:</label>
             <input id="param_mu" name="param_mu" style="width: 100px;" value="0"/>
             <br/>
 
+            <label for="param_N">Размер выборки:</label>
+            <input id="param_N" name="param_N" style="width: 100px;" value="0"/>
+            <br/>
+
             <a id="replot" href="#" onclick="return replot();">Построить</a>
+            <br/>
+
+            <p id="status"></p>
+            <a id="downloadlink" href="" hidden="hidden">Download file</a>
         </form>
     </div>
     <div id="plots">
