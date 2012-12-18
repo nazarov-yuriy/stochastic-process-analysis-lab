@@ -21,10 +21,21 @@ a#replot:active {
     padding:11px 0 9px;
 }
 
-a.tab, a.tab:visited {
+a.tabw, a.tabw:visited {
     display:inline-block;
     background-color: #999;
     width: 200px;
+    height: 40px;
+    font-size: 10pt;
+    text-align:center;
+    border:1px solid #000;
+    color:#000;
+}
+
+a.tab, a.tab:visited {
+    display:inline-block;
+    background-color: #999;
+    width: 150px;
     height: 40px;
     font-size: 10pt;
     text-align:center;
