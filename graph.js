@@ -207,8 +207,8 @@ function dist_func_real(x){
     var addr = Math.floor( 100*(x-min_y)/(max_y-min_y) );
     if(0<=addr && addr < 100){
         ret = dist_chart[addr];
-    } else {
-        ret = 0;
+    } else if (100 <= addr) {
+        ret = 1;
     }
     return ret;
 }
@@ -301,23 +301,23 @@ function fill_process(){
 
     var d2 = new Date();
     var end = d2.getTime();
-    status.textContent = "Generated in "+(end-start)+" ms.";
+    status.textContent = "Сгенерировано за "+(end-start)+" мс.";
 }
 
 function graph_load(){
     form = document.forms['params_form'];
     status = document.getElementById('status');
 
-    process_board = JXG.JSXGraph.initBoard('process_div', {boundingbox:[0,1.1,100,-0.1], axis:true});
+    process_board = JXG.JSXGraph.initBoard('process_div', {boundingbox:[0,1.1,1000,-0.1], axis:true});
     process_board.create('curve', [x_graph,y_graph],{strokeColor:'blue'});
 
     dist_func_board = JXG.JSXGraph.initBoard('dist_func_div', {boundingbox:[-5,1.1,5,-0.1], axis:true});
     dist_func_board.create('functiongraph', [dist_func,-10,10],{strokeColor:'blue'});
-    dist_func_board.create('functiongraph', [dist_func_real,-10,10],{strokeColor:'green'});
+    dist_func_board.create('functiongraph', [dist_func_real,-10,10],{strokeColor:'green',strokeWidth:3});
 
     dens_func_board = JXG.JSXGraph.initBoard('dens_func_div', {boundingbox:[-5,1.1,5,-0.1], axis:true});
     dens_func_board.create('functiongraph', [dens_func,-10,10],{strokeColor:'blue'});
-    dens_func_board.create('functiongraph', [dens_func_real,-10,10],{strokeColor:'green'});
+    dens_func_board.create('functiongraph', [dens_func_real,-10,10],{strokeColor:'green',strokeWidth:3});
 
     histogram_board = JXG.JSXGraph.initBoard('histogram_div', {boundingbox:[0,1.1,101,-0.01], axis:true});
     //MAKE ME UNSEE IT
