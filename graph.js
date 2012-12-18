@@ -30,6 +30,13 @@ var x_graph = [];
 var y_graph = [];
 //==== process data ====
 var y = [];
+//==== processes parameters ====
+var n;
+var a;
+var b;
+var sigma;
+var lambda;
+var mu;
 
 //==== functions that produce process data values ====
 function generate_uniform(n,a,b){
@@ -46,11 +53,11 @@ function generate_norm(n,sigma,mu){
 
         //Используется Преобразование Бокса — Мюллера
         var lz;
-        do{
-            lx = 2*Math.random()-1;
-            ly = 2*Math.random()-1;
-            ls = lx*lx + ly*ly;
-        }while( ls>1 || ls==0 )
+        do {
+            lx = 2 * Math.random() - 1;
+            ly = 2 * Math.random() - 1;
+            ls = lx * lx + ly * ly;
+        } while (ls > 1 || ls == 0);
         lz = lx * Math.sqrt( -2 * Math.log(ls) / ls );
 
         y[i] = mu+sigma*lz;
@@ -65,11 +72,11 @@ function generate_lognorm(n,sigma,mu){
 
         //Используется Преобразование Бокса — Мюллера
         var lz;
-        do{
-            lx = 2*Math.random()-1;
-            ly = 2*Math.random()-1;
-            ls = lx*lx + ly*ly;
-        }while( ls>1 || ls==0 )
+        do {
+            lx = 2 * Math.random() - 1;
+            ly = 2 * Math.random() - 1;
+            ls = lx * lx + ly * ly;
+        } while (ls > 1 || ls == 0);
         lz = lx * Math.sqrt( -2 * Math.log(ls) / ls );
 
         y[i] = Math.exp( mu+sigma*lz );
@@ -82,12 +89,55 @@ function generate_exp(n,lambda){
     }
 }
 
+//==== analytical distribution dunctions ====
+function dist_uniform(x){
+    var ret = 0;
+    if(a<=x && x<=b){
+        ret = (x-a)/(b-a);
+    } else if(b < x) {
+        ret = 1;
+    }
+    return ret;
+}
+
+//ToDo: improve error function calculation
+function erf(x){
+    var res = 0;
+    var lx=x;
+    for(var i = 0; i < 5000; i++){
+        res += lx/(2*i+1);
+        lx = -lx*x*x;
+    }
+    return 2*res/Math.sqrt(Math.PI);
+}
+
+function dist_normal(x){
+    return ( 1 + erf( (x - mu)/Math.sqrt(2*sigma*sigma) ) )/2;
+}
+
+function dist_lognormal(x){
+    return ( 1 + erf( ( Math.log(x) - mu)/Math.sqrt(2*sigma*sigma) ) )/2;
+}
+
+function dist_exp(x){
+    var ret = 0;
+    if(x>0)
+        ret = 1-Math.exp(-lambda * x);
+    return ret;
+}
+
 //==== functions for graphs ====
 function dist_func(x){
-    return 0;
-    //var sigma = form.param_sigm.value;
-    //var mu = form.param_mu.value;
-    //return Math.exp( -(x-mu)*(x-mu)/(2*sigma*sigma) )/ (sigma * Math.sqrt(2 * Math.PI));
+    switch(form.process_type_select.value){
+        case 'uniform':   return dist_uniform(x);
+            break;
+        case 'normal':    return dist_normal(x);
+            break;
+        case 'lognormal': return dist_lognormal(x);
+            break;
+        case 'exp':       return dist_exp(x);
+            break;
+    }
 }
 
 function dens_func(x){
@@ -105,12 +155,12 @@ function fillProcess(){
     var d1 = new Date();
     var start = d1.getTime();
 
-    var n      = parseInt(form.param_N.value);
-    var a      = parseFloat(form.param_a.value);
-    var b      = parseFloat(form.param_b.value);
-    var sigma  = parseFloat(form.param_sigma.value);
-    var lambda = parseFloat(form.param_lambda.value);
-    var mu     = parseFloat(form.param_mu.value);
+    n      = parseInt(form.param_N.value);
+    a      = parseFloat(form.param_a.value);
+    b      = parseFloat(form.param_b.value);
+    sigma  = parseFloat(form.param_sigma.value);
+    lambda = parseFloat(form.param_lambda.value);
+    mu     = parseFloat(form.param_mu.value);
 
     switch(form.process_type_select.value){
         case 'uniform':   generate_uniform(n, a, b);
@@ -141,7 +191,7 @@ function graph_load(){
     process_board.create('curve', [x_graph,y_graph]);
 
     dist_func_board = JXG.JSXGraph.initBoard('dist_func_div', {boundingbox:[-5,1,5,-0.1], axis:true});
-    dist_func_board.create('functiongraph', [dist_func,-4,4]);
+    dist_func_board.create('functiongraph', [dist_func,-10,10]);
 
     dens_func_board = JXG.JSXGraph.initBoard('dens_func_div', {boundingbox:[0,1,10000,-0.1], axis:true});
     dens_func_board.create('functiongraph', [dens_func,0,10000]);
