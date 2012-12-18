@@ -29,9 +29,21 @@ var status;
 var x_graph = [];
 var y_graph = [];
 
-var dens_chart = [1,2,3,4];
+var dens_chart = [
+    0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0];
 //==== process data ====
 var y = [];
+var min_y = 0;
+var max_y = 0;
 //==== processes parameters ====
 var n;
 var a;
@@ -42,12 +54,22 @@ var mu;
 
 //==== functions that produce process data values ====
 function generate_uniform(n,a,b){
+    min_y = Number.POSITIVE_INFINITY;
+    max_y = Number.NEGATIVE_INFINITY;
+
     for(var i = 0 ; i<n;i++){
-        y[i] = a+Math.random(b-a);
+        y[i] = a+Math.random()*(b-a);
+        if(y[i]<min_y)
+            min_y = y[i];
+        if(y[i]>max_y)
+            max_y = y[i];
     }
 }
 
 function generate_norm(n,sigma,mu){
+    min_y = Number.POSITIVE_INFINITY;
+    max_y = Number.NEGATIVE_INFINITY;
+
     for(var i = 0 ; i<n;i++){
         var lx;
         var ly;
@@ -63,10 +85,18 @@ function generate_norm(n,sigma,mu){
         lz = lx * Math.sqrt( -2 * Math.log(ls) / ls );
 
         y[i] = mu+sigma*lz;
+
+        if(y[i]<min_y)
+            min_y = y[i];
+        if(y[i]>max_y)
+            max_y = y[i];
     }
 }
 
 function generate_lognorm(n,sigma,mu){
+    min_y = Number.POSITIVE_INFINITY;
+    max_y = Number.NEGATIVE_INFINITY;
+
     for(var i = 0 ; i<n;i++){
         var lx;
         var ly;
@@ -82,12 +112,25 @@ function generate_lognorm(n,sigma,mu){
         lz = lx * Math.sqrt( -2 * Math.log(ls) / ls );
 
         y[i] = Math.exp( mu+sigma*lz );
+
+        if(y[i]<min_y)
+            min_y = y[i];
+        if(y[i]>max_y)
+            max_y = y[i];
     }
 }
 
 function generate_exp(n,lambda){
+    min_y = Number.POSITIVE_INFINITY;
+    max_y = Number.NEGATIVE_INFINITY;
+
     for(var i = 0 ; i<n;i++){
         y[i] = -Math.log( Math.random() )/lambda;
+
+        if(y[i]<min_y)
+            min_y = y[i];
+        if(y[i]>max_y)
+            max_y = y[i];
     }
 }
 
@@ -158,6 +201,18 @@ function dens_exp(x){
 }
 
 //==== functions for graphs ====
+function dist_func_real(x){
+    var ret = 0
+    /*if(max_y<x){
+        ret = 1;
+    } else if(x<min_y) {
+        ret = 0;
+    } else {
+        ret = 0.5;
+    }*/
+    return ret;
+}
+
 function dist_func(x){
     var ret = 0;
     switch(form.process_type_select.value){
@@ -169,6 +224,17 @@ function dist_func(x){
             break;
         case 'exp':       ret = dist_exp(x);
             break;
+    }
+    return ret;
+}
+
+function dens_func_real(x){
+    var ret = 0
+    var addr = Math.floor( 100*(x-min_y)/(max_y-min_y) );
+    if(0<=addr && addr < 100){
+        ret = dens_chart[addr];
+    } else {
+        ret = 0;
     }
     return ret;
 }
@@ -189,7 +255,20 @@ function dens_func(x){
 }
 
 //==== other logic ===
-function fillProcess(){
+function fill_hyst(){
+    var cor = 100;
+    dens_chart = [];
+    for (var i = 0; i < cor; i++) {
+        dens_chart[i] = 0;
+    }
+    for(i = 0; i < n; i++){
+        var addr = Math.floor( cor*(y[i]-min_y)/(max_y-min_y) );
+        if (0 <= addr)
+            dens_chart[addr]+=cor/n/(max_y-min_y);
+    }
+}
+
+function fill_process(){
     var d1 = new Date();
     var start = d1.getTime();
 
@@ -211,7 +290,7 @@ function fillProcess(){
             break;
     }
 
-    for(var i = 0; i < n; i++){
+    for(var i = 0; i < Math.min(n,1000); i++){
         x_graph[i] = i;
         y_graph[i] = y[i];
     }
@@ -226,21 +305,49 @@ function graph_load(){
     status = document.getElementById('status');
 
     process_board = JXG.JSXGraph.initBoard('process_div', {boundingbox:[0,1.1,100,-0.1], axis:true});
-    process_board.create('curve', [x_graph,y_graph]);
+    var graph = process_board.create('curve', [x_graph,y_graph],{strokeColor:'blue'});
 
     dist_func_board = JXG.JSXGraph.initBoard('dist_func_div', {boundingbox:[-5,1.1,5,-0.1], axis:true});
-    dist_func_board.create('functiongraph', [dist_func,-10,10]);
+    dist_func_board.create('functiongraph', [dist_func,-10,10],{strokeColor:'blue'});
+    dist_func_board.create('functiongraph', [dist_func_real,-10,10],{strokeColor:'green'});
 
     dens_func_board = JXG.JSXGraph.initBoard('dens_func_div', {boundingbox:[-5,1.1,5,-0.1], axis:true});
-    dens_func_board.create('functiongraph', [dens_func,-10,10]);
+    dens_func_board.create('functiongraph', [dens_func,-10,10],{strokeColor:'blue'});
+    dens_func_board.create('functiongraph', [dens_func_real,-10,10],{strokeColor:'green'});
 
-    histogram_board = JXG.JSXGraph.initBoard('histogram_div', {boundingbox:[0,5.1,100,-0.1], axis:true});
-    histogram_board.create('chart', dens_chart, {chartStyle:'bar',width:0.9});
+    histogram_board = JXG.JSXGraph.initBoard('histogram_div', {boundingbox:[0,0.2,101,-0.01], axis:true});
+    //MAKE ME UNSEE IT
+    var f;
+    f = [
+        function(){return dens_chart[0];}, function(){return dens_chart[1];}, function(){return dens_chart[2];}, function(){return dens_chart[3];}, function(){return dens_chart[4];},
+        function(){return dens_chart[5];}, function(){return dens_chart[6];}, function(){return dens_chart[7];}, function(){return dens_chart[8];}, function(){return dens_chart[9];},
+        function(){return dens_chart[10];}, function(){return dens_chart[11];}, function(){return dens_chart[12];}, function(){return dens_chart[13];}, function(){return dens_chart[14];},
+        function(){return dens_chart[15];}, function(){return dens_chart[16];}, function(){return dens_chart[17];}, function(){return dens_chart[18];}, function(){return dens_chart[19];},
+        function(){return dens_chart[20];}, function(){return dens_chart[21];}, function(){return dens_chart[22];}, function(){return dens_chart[23];}, function(){return dens_chart[24];},
+        function(){return dens_chart[25];}, function(){return dens_chart[26];}, function(){return dens_chart[27];}, function(){return dens_chart[28];}, function(){return dens_chart[29];},
+        function(){return dens_chart[30];}, function(){return dens_chart[31];}, function(){return dens_chart[32];}, function(){return dens_chart[33];}, function(){return dens_chart[34];},
+        function(){return dens_chart[35];}, function(){return dens_chart[36];}, function(){return dens_chart[37];}, function(){return dens_chart[38];}, function(){return dens_chart[39];},
+        function(){return dens_chart[40];}, function(){return dens_chart[41];}, function(){return dens_chart[42];}, function(){return dens_chart[43];}, function(){return dens_chart[44];},
+        function(){return dens_chart[45];}, function(){return dens_chart[46];}, function(){return dens_chart[47];}, function(){return dens_chart[48];}, function(){return dens_chart[49];},
+        function(){return dens_chart[50];}, function(){return dens_chart[51];}, function(){return dens_chart[52];}, function(){return dens_chart[53];}, function(){return dens_chart[54];},
+        function(){return dens_chart[55];}, function(){return dens_chart[56];}, function(){return dens_chart[57];}, function(){return dens_chart[58];}, function(){return dens_chart[59];},
+        function(){return dens_chart[60];}, function(){return dens_chart[61];}, function(){return dens_chart[62];}, function(){return dens_chart[63];}, function(){return dens_chart[64];},
+        function(){return dens_chart[65];}, function(){return dens_chart[66];}, function(){return dens_chart[67];}, function(){return dens_chart[68];}, function(){return dens_chart[69];},
+        function(){return dens_chart[70];}, function(){return dens_chart[71];}, function(){return dens_chart[72];}, function(){return dens_chart[73];}, function(){return dens_chart[74];},
+        function(){return dens_chart[75];}, function(){return dens_chart[76];}, function(){return dens_chart[77];}, function(){return dens_chart[78];}, function(){return dens_chart[79];},
+        function(){return dens_chart[80];}, function(){return dens_chart[81];}, function(){return dens_chart[82];}, function(){return dens_chart[83];}, function(){return dens_chart[84];},
+        function(){return dens_chart[85];}, function(){return dens_chart[86];}, function(){return dens_chart[87];}, function(){return dens_chart[88];}, function(){return dens_chart[89];},
+        function(){return dens_chart[90];}, function(){return dens_chart[91];}, function(){return dens_chart[92];}, function(){return dens_chart[93];}, function(){return dens_chart[94];},
+        function(){return dens_chart[95];}, function(){return dens_chart[96];}, function(){return dens_chart[97];}, function(){return dens_chart[98];}, function(){return dens_chart[99];}];
+    histogram_board.create('chart', [f], {chartStyle:'bar',width:0.9});
+
 }
 
 //==== "generate" button handler. Generate and update graphs.
 function replot(){
-    fillProcess();
+    fill_process();
+    fill_hyst();
+
     generate_downloadlink();
     process_board.update();
     dist_func_board.update();
