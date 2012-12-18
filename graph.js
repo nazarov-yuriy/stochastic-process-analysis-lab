@@ -267,7 +267,7 @@ function fill_hyst(){
             dens_chart[addr]+=cor/n/(max_y-min_y);
     }
     dist_chart[0] = 0;
-    for (var i = 0; i < cor; i++) {
+    for (i = 0; i < cor; i++) {
         dist_chart[i+1] = dist_chart[i] + dens_chart[i]*(max_y-min_y)/cor;
     }
 }
@@ -319,7 +319,7 @@ function graph_load(){
     dens_func_board.create('functiongraph', [dens_func,-10,10],{strokeColor:'blue'});
     dens_func_board.create('functiongraph', [dens_func_real,-10,10],{strokeColor:'green'});
 
-    histogram_board = JXG.JSXGraph.initBoard('histogram_div', {boundingbox:[0,0.2,101,-0.01], axis:true});
+    histogram_board = JXG.JSXGraph.initBoard('histogram_div', {boundingbox:[0,1.1,101,-0.01], axis:true});
     //MAKE ME UNSEE IT
     var f;
     f = [
@@ -352,7 +352,7 @@ function replot(){
     fill_process();
     fill_hyst();
 
-    generate_downloadlink();
+    show_link();
     process_board.update();
     dist_func_board.update();
     dens_func_board.update();

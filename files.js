@@ -17,8 +17,20 @@
 
 var header = "data:application/octet-stream,";
 
+function show_link(){
+    var link = document.getElementById('downloadlink');
+    link.hidden = false;
+}
+
 function generate_downloadlink(){
     var link = document.getElementById('downloadlink');
-    link.href = header+"123";
-    link.hidden = false;
+    var crlf = "%0D%0A";
+    var string=header+n+crlf+"1";
+    for(var i = 0; i < n; i++){
+        var tmp = crlf + y[i];
+        tmp=tmp.replace(/\./,"%2C");
+        tmp=tmp.replace(/,/,"%2C");
+        string += tmp;
+    }
+    link.href = string;
 }
