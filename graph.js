@@ -28,6 +28,8 @@ var status;
 //==== data for graph ====
 var x_graph = [];
 var y_graph = [];
+
+var dens_chart = [1,2,3,4];
 //==== process data ====
 var y = [];
 //==== processes parameters ====
@@ -126,28 +128,64 @@ function dist_exp(x){
     return ret;
 }
 
+//==== analytical density dunctions ====
+function dens_uniform(x){
+    var ret = 0;
+    if(a<=x && x<=b){
+        ret = 1/(b-a);
+    }
+    return ret;
+}
+
+function dens_normal(x){
+    return Math.exp( -(x-mu)*(x-mu)/(2*sigma*sigma) )/(sigma*Math.sqrt(2*Math.PI));
+}
+
+function dens_lognormal(x){
+    var ret = 0;
+    if(x>0){
+        ret = Math.exp( -(Math.log(x)-mu)*(Math.log(x)-mu)/(2*sigma*sigma) )/(sigma*Math.sqrt(2*Math.PI));
+    }
+    return ret;
+}
+
+function dens_exp(x){
+    var ret = 0;
+    if(x>0){
+        ret = lambda * Math.exp(-lambda*x);
+    }
+    return ret;
+}
+
 //==== functions for graphs ====
 function dist_func(x){
+    var ret = 0;
     switch(form.process_type_select.value){
-        case 'uniform':   return dist_uniform(x);
+        case 'uniform':   ret = dist_uniform(x);
             break;
-        case 'normal':    return dist_normal(x);
+        case 'normal':    ret = dist_normal(x);
             break;
-        case 'lognormal': return dist_lognormal(x);
+        case 'lognormal': ret = dist_lognormal(x);
             break;
-        case 'exp':       return dist_exp(x);
+        case 'exp':       ret = dist_exp(x);
             break;
     }
+    return ret;
 }
 
 function dens_func(x){
-    return 0;
-    //return y[Math.floor(x)];
-}
-
-function histogram(x){
-    return 0;
-    //return a * Math.sin(x)*Math.sin(x);
+    var ret = 0;
+    switch(form.process_type_select.value){
+        case 'uniform':   ret = dens_uniform(x);
+            break;
+        case 'normal':    ret = dens_normal(x);
+            break;
+        case 'lognormal': ret = dens_lognormal(x);
+            break;
+        case 'exp':       ret = dens_exp(x);
+            break;
+    }
+    return ret;
 }
 
 //==== other logic ===
@@ -187,17 +225,17 @@ function graph_load(){
     form = document.forms['params_form'];
     status = document.getElementById('status');
 
-    process_board = JXG.JSXGraph.initBoard('process_div', {boundingbox:[0,1,100,-0.1], axis:true});
+    process_board = JXG.JSXGraph.initBoard('process_div', {boundingbox:[0,1.1,100,-0.1], axis:true});
     process_board.create('curve', [x_graph,y_graph]);
 
-    dist_func_board = JXG.JSXGraph.initBoard('dist_func_div', {boundingbox:[-5,1,5,-0.1], axis:true});
+    dist_func_board = JXG.JSXGraph.initBoard('dist_func_div', {boundingbox:[-5,1.1,5,-0.1], axis:true});
     dist_func_board.create('functiongraph', [dist_func,-10,10]);
 
-    dens_func_board = JXG.JSXGraph.initBoard('dens_func_div', {boundingbox:[0,1,10000,-0.1], axis:true});
-    dens_func_board.create('functiongraph', [dens_func,0,10000]);
+    dens_func_board = JXG.JSXGraph.initBoard('dens_func_div', {boundingbox:[-5,1.1,5,-0.1], axis:true});
+    dens_func_board.create('functiongraph', [dens_func,-10,10]);
 
-    histogram_board = JXG.JSXGraph.initBoard('histogram_div', {boundingbox:[-4,4,4,-4], axis:true});
-    histogram_board.create('functiongraph', [histogram,-4,4]);
+    histogram_board = JXG.JSXGraph.initBoard('histogram_div', {boundingbox:[0,5.1,100,-0.1], axis:true});
+    histogram_board.create('chart', dens_chart, {chartStyle:'bar',width:0.9});
 }
 
 //==== "generate" button handler. Generate and update graphs.
