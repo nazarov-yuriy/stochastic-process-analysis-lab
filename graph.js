@@ -40,6 +40,7 @@ var dens_chart = [
     0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,0];
+var dist_chart = [];
 //==== process data ====
 var y = [];
 var min_y = 0;
@@ -202,14 +203,13 @@ function dens_exp(x){
 
 //==== functions for graphs ====
 function dist_func_real(x){
-    var ret = 0
-    /*if(max_y<x){
-        ret = 1;
-    } else if(x<min_y) {
-        ret = 0;
+    var ret = 0;
+    var addr = Math.floor( 100*(x-min_y)/(max_y-min_y) );
+    if(0<=addr && addr < 100){
+        ret = dist_chart[addr];
     } else {
-        ret = 0.5;
-    }*/
+        ret = 0;
+    }
     return ret;
 }
 
@@ -229,7 +229,7 @@ function dist_func(x){
 }
 
 function dens_func_real(x){
-    var ret = 0
+    var ret = 0;
     var addr = Math.floor( 100*(x-min_y)/(max_y-min_y) );
     if(0<=addr && addr < 100){
         ret = dens_chart[addr];
@@ -265,6 +265,10 @@ function fill_hyst(){
         var addr = Math.floor( cor*(y[i]-min_y)/(max_y-min_y) );
         if (0 <= addr)
             dens_chart[addr]+=cor/n/(max_y-min_y);
+    }
+    dist_chart[0] = 0;
+    for (var i = 0; i < cor; i++) {
+        dist_chart[i+1] = dist_chart[i] + dens_chart[i]*(max_y-min_y)/cor;
     }
 }
 
@@ -305,7 +309,7 @@ function graph_load(){
     status = document.getElementById('status');
 
     process_board = JXG.JSXGraph.initBoard('process_div', {boundingbox:[0,1.1,100,-0.1], axis:true});
-    var graph = process_board.create('curve', [x_graph,y_graph],{strokeColor:'blue'});
+    process_board.create('curve', [x_graph,y_graph],{strokeColor:'blue'});
 
     dist_func_board = JXG.JSXGraph.initBoard('dist_func_div', {boundingbox:[-5,1.1,5,-0.1], axis:true});
     dist_func_board.create('functiongraph', [dist_func,-10,10],{strokeColor:'blue'});
