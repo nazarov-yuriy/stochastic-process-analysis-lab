@@ -40,19 +40,45 @@ function generate_uniform(n,a,b){
 
 function generate_norm(n,sigma,mu){
     for(var i = 0 ; i<n;i++){
-        y[i] = Math.random();
+        var lx;
+        var ly;
+        var ls;
+
+        //Используется Преобразование Бокса — Мюллера
+        var lz;
+        do{
+            lx = 2*Math.random()-1;
+            ly = 2*Math.random()-1;
+            ls = lx*lx + ly*ly;
+        }while( ls>1 || ls==0 )
+        lz = lx * Math.sqrt( -2 * Math.log(ls) / ls );
+
+        y[i] = mu+sigma*lz;
     }
 }
 
 function generate_lognorm(n,sigma,mu){
     for(var i = 0 ; i<n;i++){
-        y[i] = Math.random();
+        var lx;
+        var ly;
+        var ls;
+
+        //Используется Преобразование Бокса — Мюллера
+        var lz;
+        do{
+            lx = 2*Math.random()-1;
+            ly = 2*Math.random()-1;
+            ls = lx*lx + ly*ly;
+        }while( ls>1 || ls==0 )
+        lz = lx * Math.sqrt( -2 * Math.log(ls) / ls );
+
+        y[i] = Math.exp( mu+sigma*lz );
     }
 }
 
 function generate_exp(n,lambda){
     for(var i = 0 ; i<n;i++){
-        y[i] = Math.random();
+        y[i] = -Math.log( Math.random() )/lambda;
     }
 }
 
