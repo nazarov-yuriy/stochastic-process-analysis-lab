@@ -42,10 +42,8 @@ function parse(text){
 
     if( isNaN(l_cnt) ){
         window.alert("Count is not a number.");
-        return;
     } else if(l_cnt != lines.length-2){
         window.alert("Count is not equal real elements count.");
-        return;
     } else {
         y = [];
         min_y = Number.POSITIVE_INFINITY;
