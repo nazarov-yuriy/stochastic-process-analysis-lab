@@ -25,8 +25,8 @@ function show_link(){
 function generate_downloadlink(){
     var link = document.getElementById('downloadlink');
     var crlf = "%0D%0A";
-    var string=header+n+crlf+"1";
-    for(var i = 0; i < n; i++){
+    var string=header+ y.length+crlf+"1";
+    for(var i = 0; i < y.length; i++){
         var tmp = crlf + y[i];
         tmp=tmp.replace(/\./,"%2C");
         tmp=tmp.replace(/,/,"%2C");
@@ -34,3 +34,59 @@ function generate_downloadlink(){
     }
     link.href = string;
 }
+
+function parse(text){
+    var lines = text.split(/[\n\r]+/);
+    var l_cnt = parseInt(lines[0]);
+    //var l_disc = parseFloat(lines[1]);
+
+    if( isNaN(l_cnt) ){
+        window.alert("Count is not a number.");
+        return;
+    } else if(l_cnt != lines.length-2){
+        window.alert("Count is not equal real elements count.");
+        return;
+    } else {
+        y = [];
+        min_y = Number.POSITIVE_INFINITY;
+        max_y = Number.NEGATIVE_INFINITY;
+
+        for(var i = 0; i < lines.length-2; i++){
+
+            y[i] = parseFloat( lines[i+2].replace(",", ".") );
+            if(y[i]<min_y)
+                min_y = y[i];
+            if(y[i]>max_y)
+                max_y = y[i];
+        }
+        fill_process_graph();
+        fill_hyst();
+        update_graphs();
+    }
+}
+
+function parse_file(fileinput){
+    var files = fileinput.files;
+
+    if (!files.length) {
+        alert('Please select a file!');
+        return;
+    }
+
+    var file = files[0];
+    var start = 0;
+    var stop = file.size - 1;
+
+    var reader = new FileReader();
+
+    // If we use onloadend, we need to check the readyState.
+    reader.onloadend = function(evt) {
+        if (evt.target.readyState == FileReader.DONE) {
+            parse(evt.target.result);
+        }
+    };
+
+    var blob = file.slice(start, stop + 1);
+    reader.readAsBinaryString(blob);
+}
+

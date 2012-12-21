@@ -58,6 +58,8 @@
             <a id="replot" href="#" onclick="return replot();">Построить</a>
             <br/>
 
+
+            <input type="file" id="files" name="file" size="5" onchange="parse_file(this);"/><br/>
             <p id="status"></p>
             <a id="downloadlink" href="" hidden="hidden" onmouseover="generate_downloadlink()">Загрузить выборку</a>
         </form>

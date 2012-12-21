@@ -261,14 +261,20 @@ function fill_hyst(){
     for (var i = 0; i < cor; i++) {
         dens_chart[i] = 0;
     }
-    for(i = 0; i < n; i++){
+    for(i = 0; i < y.length; i++){
         var addr = Math.floor( cor*(y[i]-min_y)/(max_y-min_y) );
         if (0 <= addr)
-            dens_chart[addr]+=cor/n/(max_y-min_y);
+            dens_chart[addr]+=cor/ y.length/(max_y-min_y);
     }
     dist_chart[0] = 0;
     for (i = 0; i < cor; i++) {
         dist_chart[i+1] = dist_chart[i] + dens_chart[i]*(max_y-min_y)/cor;
+    }
+}
+function fill_process_graph(){
+    for(var i = 0; i < Math.min(y.length,1000); i++){
+        x_graph[i] = i;
+        y_graph[i] = y[i];
     }
 }
 
@@ -294,10 +300,7 @@ function fill_process(){
             break;
     }
 
-    for(var i = 0; i < Math.min(n,1000); i++){
-        x_graph[i] = i;
-        y_graph[i] = y[i];
-    }
+    fill_process_graph();
 
     var d2 = new Date();
     var end = d2.getTime();
@@ -347,16 +350,20 @@ function graph_load(){
 
 }
 
-//==== "generate" button handler. Generate and update graphs.
-function replot(){
-    fill_process();
-    fill_hyst();
-
-    show_link();
+function update_graphs(){
     process_board.update();
     dist_func_board.update();
     dens_func_board.update();
     histogram_board.update();
+}
+
+//==== "generate" button handler. Generate and update graphs.
+function replot(){
+    fill_process();
+    fill_hyst();
+    update_graphs();
+    show_link();
+
     return false;
 }
 
