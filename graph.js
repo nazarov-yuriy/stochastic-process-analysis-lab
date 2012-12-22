@@ -61,6 +61,21 @@ var mu = 0;
 var from = 0;
 var to = 1;
 
+//==== charactyristics ===
+var m1;
+var m2;
+var m3;
+var m4;
+
+var v1;
+var v2;
+var v3;
+var v4;
+
+var sigma1;
+var assim;
+var exc;
+
 //==== functions that produce process data values ====
 function generate_uniform(n,a,b){
     min_y = Number.POSITIVE_INFINITY;
@@ -250,10 +265,15 @@ function dist_func(x){
 
 function dens_func_real(x){
     var ret = 0;
-    var addr = Math.floor( 100*(x-min_y)/(max_y-min_y) );
-    if(0<=addr && addr < 100){
-        ret = dens_chart[addr];
-    } else {
+    var addr_down = Math.floor( 100*(x-min_y)/(max_y-min_y) );
+    var addr_up   = -Math.floor( -100*(x-min_y)/(max_y-min_y) );
+    var fract     = 100*(x-min_y)/(max_y-min_y) - addr_down;
+
+    if(0<=addr_up && addr_down <= 99){
+        var d = (addr_down < 0) ? 0 : dens_chart[addr_down];
+        var u = (addr_up > 99) ? 0 : dens_chart[addr_up];
+        ret = u*fract + d*(1-fract);
+    } else if (99 < addr_down) {
         ret = 0;
     }
     return ret;
@@ -324,9 +344,10 @@ function fill_process(){
     }
 
     fill_process_graph();
+    calc_char();
 
     var res2 = in_interval(from,to);
-    document.getElementById('res').textContent = res2+" значений попадает в интервал";
+    document.getElementById('res').textContent = res2+" значений попадает в интервал. \nМат.ожидание: "+v1+"\nДисперсия: "+m2+"\nКоэф. асимметрии: "+assim+"\nКоэф. эксцесса: "+exc;
 
     var d2 = new Date();
     var end = d2.getTime();
@@ -397,6 +418,33 @@ function in_interval(from, to){
         }
     }
     return cnt;
+}
+
+function calc_char(){
+    v1 = 0;
+    v2 = 0;
+    v3 = 0;
+    v4 = 0;
+    for(var i=0; i<y.length; i++){
+        v1 += y[i];
+        v2 += y[i]*y[i];
+        v3 += y[i]*y[i]*y[i];
+        v4 += y[i]*y[i]*y[i]*y[i];
+    }
+    v1 = v1/n;
+    v2 = v2/n;
+    v3 = v3/n;
+    v4 = v4/n;
+
+    m1 = 0;
+    m2 = v2 - v1*v1;
+    m3 = v3 - 3*v1*v2 + 2*v1*v1;
+    m4 = v4 - 4*v1*v3 + 6*v1*v1*v2 - 3*v1*v1*v1*v1;
+
+    sigma1 = Math.sqrt(m2);
+
+    assim = m3/(sigma1*sigma1*sigma1);
+    exc   = m4/(sigma1*sigma1*sigma1*sigma1)-3;
 }
 
 //==== "generate" button handler. Generate and update graphs.
