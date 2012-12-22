@@ -250,6 +250,8 @@ function dist_func_real(x){
 
 function dist_func(x){
     var ret = 0;
+    if(loaded_from_file)
+        return 0;
     switch(form.process_type_select.value){
         case 'uniform':   ret = dist_uniform(x);
             break;
@@ -281,6 +283,8 @@ function dens_func_real(x){
 
 function dens_func(x){
     var ret = 0;
+    if(loaded_from_file)
+        return 0;
     switch(form.process_type_select.value){
         case 'uniform':   ret = dens_uniform(x);
             break;
@@ -344,10 +348,6 @@ function fill_process(){
     }
 
     fill_process_graph();
-    calc_char();
-
-    var res2 = in_interval(from,to);
-    document.getElementById('res').textContent = res2+" значений попадает в интервал. \nМат.ожидание: "+v1+"\nДисперсия: "+m2+"\nКоэф. асимметрии: "+assim+"\nКоэф. эксцесса: "+exc;
 
     var d2 = new Date();
     var end = d2.getTime();
@@ -362,12 +362,12 @@ function graph_load(){
     process_board.create('curve', [x_graph,y_graph],{strokeColor:'blue'});
 
     dist_func_board = JXG.JSXGraph.initBoard('dist_func_div', {boundingbox:[-5,1.1,5,-0.1], axis:true});
-    dist_func_board.create('functiongraph', [dist_func_real,-1000,1000],{strokeColor:'green',strokeWidth:3});
-    dist_func_board.create('functiongraph', [dist_func,-1000,1000],{strokeColor:'blue'});
+    dist_func_board.create('functiongraph', [dist_func_real,-10,50],{strokeColor:'green',strokeWidth:3});
+    dist_func_board.create('functiongraph', [dist_func,-10,50],{strokeColor:'blue'});
 
     dens_func_board = JXG.JSXGraph.initBoard('dens_func_div', {boundingbox:[-5,1.1,5,-0.1], axis:true});
-    dens_func_board.create('functiongraph', [dens_func_real,-1000,1000],{strokeColor:'green',strokeWidth:3});
-    dens_func_board.create('functiongraph', [dens_func,-1000,1000],{strokeColor:'blue'});
+    dens_func_board.create('functiongraph', [dens_func_real,-10,50],{strokeColor:'green',strokeWidth:3});
+    dens_func_board.create('functiongraph', [dens_func,-10,50],{strokeColor:'blue'});
 
     histogram_board = JXG.JSXGraph.initBoard('histogram_div', {boundingbox:[0,1.1,101,-0.01], axis:true});
     //MAKE ME UNSEE IT
@@ -454,6 +454,11 @@ function replot(){
     fill_hyst();
     update_graphs();
     show_link();
+
+    calc_char();
+
+    var res2 = in_interval(from,to);
+    document.getElementById('res').textContent = res2+" значений попадает в интервал. \nМат.ожидание: "+v1+"\nДисперсия: "+m2+"\nКоэф. асимметрии: "+assim+"\nКоэф. эксцесса: "+exc;
 
     return false;
 }
