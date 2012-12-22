@@ -73,6 +73,10 @@ function parse(text){
         loaded_from_file = true;
         fill_process_graph();
         fill_hyst();
+        calc_char();
+
+        var res2 = in_interval(from,to);
+        document.getElementById('res').textContent = res2+" значений попадает в интервал. \nМат.ожидание: "+v1+"\nДисперсия: "+m2+"\nКоэф. асимметрии: "+assim+"\nКоэф. эксцесса: "+exc;
         update_graphs();
     }
 }
