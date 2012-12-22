@@ -15,6 +15,9 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+//states
+var loaded_from_file = false;
+
 //==== graph boards ====
 var process_board;
 var dist_func_board;
@@ -43,23 +46,30 @@ var dens_chart = [
 var dist_chart = [];
 //==== process data ====
 var y = [];
+var proc = [0];
 var min_y = 0;
 var max_y = 0;
 //==== processes parameters ====
-var n;
-var a;
-var b;
-var sigma;
-var lambda;
-var mu;
+var n = 100;
+var a = 1;
+var b = 1;
+var sigma = 1;
+var lambda = 1;
+var mu = 0;
+
+//=== calc params ===
+var from = 0;
+var to = 1;
 
 //==== functions that produce process data values ====
 function generate_uniform(n,a,b){
     min_y = Number.POSITIVE_INFINITY;
     max_y = Number.NEGATIVE_INFINITY;
+    proc[0] = 0;
 
     for(var i = 0 ; i<n;i++){
         y[i] = a+Math.random()*(b-a);
+        proc[i+1] = proc[i]+y[i];
         if(y[i]<min_y)
             min_y = y[i];
         if(y[i]>max_y)
@@ -86,6 +96,7 @@ function generate_norm(n,sigma,mu){
         lz = lx * Math.sqrt( -2 * Math.log(ls) / ls );
 
         y[i] = mu+sigma*lz;
+        proc[i+1] = proc[i]+y[i];
 
         if(y[i]<min_y)
             min_y = y[i];
@@ -113,6 +124,7 @@ function generate_lognorm(n,sigma,mu){
         lz = lx * Math.sqrt( -2 * Math.log(ls) / ls );
 
         y[i] = Math.exp( mu+sigma*lz );
+        proc[i+1] = proc[i]+y[i];
 
         if(y[i]<min_y)
             min_y = y[i];
@@ -127,6 +139,7 @@ function generate_exp(n,lambda){
 
     for(var i = 0 ; i<n;i++){
         y[i] = -Math.log( Math.random() )/lambda;
+        proc[i+1] = proc[i]+y[i];
 
         if(y[i]<min_y)
             min_y = y[i];
@@ -150,7 +163,7 @@ function dist_uniform(x){
 function erf(x){
     var res = 0;
     var lx=x;
-    for(var i = 0; i < 5000; i++){
+    for(var i = 0; i < 500; i++){
         res += lx/(2*i+1);
         lx = -lx*x*x;
     }
@@ -162,6 +175,8 @@ function dist_normal(x){
 }
 
 function dist_lognormal(x){
+    if(x<=0)
+        return 0;
     return ( 1 + erf( ( Math.log(x) - mu)/Math.sqrt(2*sigma*sigma) ) )/2;
 }
 
@@ -188,7 +203,7 @@ function dens_normal(x){
 function dens_lognormal(x){
     var ret = 0;
     if(x>0){
-        ret = Math.exp( -(Math.log(x)-mu)*(Math.log(x)-mu)/(2*sigma*sigma) )/(sigma*Math.sqrt(2*Math.PI));
+        ret = Math.exp( -(Math.log(x)-mu)*(Math.log(x)-mu)/(2*sigma*sigma) )/(x*sigma*Math.sqrt(2*Math.PI));
     }
     return ret;
 }
@@ -204,10 +219,15 @@ function dens_exp(x){
 //==== functions for graphs ====
 function dist_func_real(x){
     var ret = 0;
-    var addr = Math.floor( 100*(x-min_y)/(max_y-min_y) );
-    if(0<=addr && addr < 100){
-        ret = dist_chart[addr];
-    } else if (100 <= addr) {
+    var addr_down = Math.floor( 100*(x-min_y)/(max_y-min_y) );
+    var addr_up   = -Math.floor( -100*(x-min_y)/(max_y-min_y) );
+    var fract     = 100*(x-min_y)/(max_y-min_y) - addr_down;
+
+    if(0<=addr_up && addr_down <= 100){
+        var d = (addr_down < 0) ? 0 : dist_chart[addr_down];
+        var u = (addr_up > 100) ? 1 : dist_chart[addr_up];
+        ret = u*fract + d*(1-fract);
+    } else if (100 < addr_down) {
         ret = 1;
     }
     return ret;
@@ -289,6 +309,9 @@ function fill_process(){
     lambda = parseFloat(form.param_lambda.value);
     mu     = parseFloat(form.param_mu.value);
 
+    from   = parseFloat(form.param_f.value);
+    to     = parseFloat(form.param_t.value);
+
     switch(form.process_type_select.value){
         case 'uniform':   generate_uniform(n, a, b);
             break;
@@ -302,6 +325,9 @@ function fill_process(){
 
     fill_process_graph();
 
+    var res2 = in_interval(from,to);
+    document.getElementById('res').textContent = res2+" значений попадает в интервал";
+
     var d2 = new Date();
     var end = d2.getTime();
     status.textContent = "Сгенерировано за "+(end-start)+" мс.";
@@ -311,16 +337,16 @@ function graph_load(){
     form = document.forms['params_form'];
     status = document.getElementById('status');
 
-    process_board = JXG.JSXGraph.initBoard('process_div', {boundingbox:[0,1.1,1000,-0.1], axis:true});
+    process_board = JXG.JSXGraph.initBoard('process_div', {boundingbox:[0, 1.1, 1000, -0.1], axis:true});
     process_board.create('curve', [x_graph,y_graph],{strokeColor:'blue'});
 
     dist_func_board = JXG.JSXGraph.initBoard('dist_func_div', {boundingbox:[-5,1.1,5,-0.1], axis:true});
-    dist_func_board.create('functiongraph', [dist_func,-10,10],{strokeColor:'blue'});
-    dist_func_board.create('functiongraph', [dist_func_real,-10,10],{strokeColor:'green',strokeWidth:3});
+    dist_func_board.create('functiongraph', [dist_func_real,-1000,1000],{strokeColor:'green',strokeWidth:3});
+    dist_func_board.create('functiongraph', [dist_func,-1000,1000],{strokeColor:'blue'});
 
     dens_func_board = JXG.JSXGraph.initBoard('dens_func_div', {boundingbox:[-5,1.1,5,-0.1], axis:true});
-    dens_func_board.create('functiongraph', [dens_func,-10,10],{strokeColor:'blue'});
-    dens_func_board.create('functiongraph', [dens_func_real,-10,10],{strokeColor:'green',strokeWidth:3});
+    dens_func_board.create('functiongraph', [dens_func_real,-1000,1000],{strokeColor:'green',strokeWidth:3});
+    dens_func_board.create('functiongraph', [dens_func,-1000,1000],{strokeColor:'blue'});
 
     histogram_board = JXG.JSXGraph.initBoard('histogram_div', {boundingbox:[0,1.1,101,-0.01], axis:true});
     //MAKE ME UNSEE IT
@@ -351,14 +377,31 @@ function graph_load(){
 }
 
 function update_graphs(){
+    process_board.setBoundingBox([0,min_y + 1.1*(max_y-min_y),Math.min(y.length, 1000),max_y - 1.1*(max_y-min_y)], false);
     process_board.update();
+
+    dist_func_board.setBoundingBox([max_y - 1.1*(max_y-min_y),1.1,min_y + 1.1*(max_y-min_y),-0.1], false);
     dist_func_board.update();
+
+    dens_func_board.setBoundingBox([max_y - 1.1*(max_y-min_y),1.1,min_y + 1.1*(max_y-min_y),-0.1], false);
     dens_func_board.update();
+
     histogram_board.update();
+}
+
+function in_interval(from, to){
+    var cnt = 0;
+    for(var i=0; i<proc.length; i++){
+        if( from < proc[i] && proc[i]<to ){
+            cnt++;
+        }
+    }
+    return cnt;
 }
 
 //==== "generate" button handler. Generate and update graphs.
 function replot(){
+    loaded_from_file = false;
     fill_process();
     fill_hyst();
     update_graphs();

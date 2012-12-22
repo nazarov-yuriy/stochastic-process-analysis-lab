@@ -3,13 +3,19 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css" />
+    <script src="http://code.jquery.com/jquery-1.8.3.js"></script>
+    <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+
     <link rel="stylesheet" type="text/css" href="http://jsxgraph.uni-bayreuth.de/distrib/jsxgraph.css" />
     <script type="text/javascript" src="http://jsxgraph.uni-bayreuth.de/distrib/jsxgraphcore.js"></script>
+    <script type="text/javascript" src="progress.js"></script>
     <script type="text/javascript" src="graph.js"></script>
     <script type="text/javascript" src="files.js"></script>
     <script type="text/javascript" src="tabs.js"></script>
     <script type="text/javascript" src="params.js"></script>
     <link rel="stylesheet" type="text/css" href="graph.css" />
+
     <title></title>
 </head>
 <body>
@@ -58,10 +64,31 @@
             <a id="replot" href="#" onclick="return replot();">Построить</a>
             <br/>
 
+            <div id="div_f">
+                <label for="param_f">Начало интервала:</label>
+                <input id="param_f" name="param_f" style="width: 100px;" value="0"/>
+            </div>
+
+            <div id="div_t">
+                <label for="param_t">Конец интервала:</label>
+                <input id="param_t" name="param_t" style="width: 100px;" value="1"/>
+            </div>
+
+            <p id="res"></p>
 
             <input type="file" id="files" name="file" size="5" onchange="parse_file(this);"/><br/>
             <p id="status"></p>
-            <a id="downloadlink" href="" hidden="hidden" onmouseover="generate_downloadlink()">Загрузить выборку</a>
+            <a id="downloadlink" href="" hidden="hidden" onmouseover="generate_downloadlink_wrapper()">Загрузить выборку</a>
+
+            <div id="progressbar" style="display: none;">
+                <script>
+                    $(function() {
+                        $( "#progressbar" ).progressbar({
+                            value: 0
+                        });
+                    });
+                </script>
+            </div>
         </form>
     </div>
     <div id="plots">

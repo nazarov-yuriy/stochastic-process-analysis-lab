@@ -23,16 +23,29 @@ function show_link(){
 }
 
 function generate_downloadlink(){
+    progress = 0;
+
     var link = document.getElementById('downloadlink');
     var crlf = "%0D%0A";
     var string=header+ y.length+crlf+"1";
+
+
+    var quant = y.length/100;
     for(var i = 0; i < y.length; i++){
+        progress = i/quant;
+
         var tmp = crlf + y[i];
         tmp=tmp.replace(/\./,"%2C");
         tmp=tmp.replace(/,/,"%2C");
         string += tmp;
     }
     link.href = string;
+
+    progress = -1;
+}
+
+function generate_downloadlink_wrapper(){
+    setTimeout(generate_downloadlink, 0);
 }
 
 function parse(text){
@@ -57,6 +70,7 @@ function parse(text){
             if(y[i]>max_y)
                 max_y = y[i];
         }
+        loaded_from_file = true;
         fill_process_graph();
         fill_hyst();
         update_graphs();
