@@ -58,8 +58,7 @@ var lambda = 1;
 var mu = 0;
 
 //=== calc params ===
-var from = 0;
-var to = 1;
+var disc_int = 1;
 
 //==== charactyristics ===
 var m1;
@@ -333,8 +332,7 @@ function fill_process(){
     lambda = parseFloat(form.param_lambda.value);
     mu     = parseFloat(form.param_mu.value);
 
-    from   = parseFloat(form.param_f.value);
-    to     = parseFloat(form.param_t.value);
+    disc_int= parseFloat(form.param_int.value);
 
     switch(form.process_type_select.value){
         case 'uniform':   generate_uniform(n, a, b);
@@ -437,9 +435,19 @@ function calc_char(){
     v4 = v4/n;
 
     m1 = 0;
-    m2 = v2 - v1*v1;
-    m3 = v3 - 3*v1*v2 + 2*v1*v1;
-    m4 = v4 - 4*v1*v3 + 6*v1*v1*v2 - 3*v1*v1*v1*v1;
+    m2 = 0;
+    m3 = 0;
+    m4 = 0;
+    for(var i=0; i<y.length; i++){
+        m1 += y[i]-v1;
+        m2 += (y[i]-v1)*(y[i]-v1);
+        m3 += (y[i]-v1)*(y[i]-v1)*(y[i]-v1);
+        m4 += (y[i]-v1)*(y[i]-v1)*(y[i]-v1)*(y[i]-v1);
+    }
+    m1 = m1/n;
+    m2 = m2/n;
+    m3 = m3/n;
+    m4 = m4/n;
 
     sigma1 = Math.sqrt(m2);
 
@@ -457,8 +465,9 @@ function replot(){
 
     calc_char();
 
-    var res2 = in_interval(from,to);
-    document.getElementById('res').textContent = res2+" значений попадает в интервал. \nМат.ожидание: "+v1+"\nДисперсия: "+m2+"\nКоэф. асимметрии: "+assim+"\nКоэф. эксцесса: "+exc;
+    var res2 = 0;
+    //res2 = in_interval(from,to);
+    document.getElementById('res').textContent = "Мат.ожидание: "+v1+"\nДисперсия: "+m2+"\nКоэф. асимметрии: "+assim+"\nКоэф. эксцесса: "+exc;
 
     return false;
 }
