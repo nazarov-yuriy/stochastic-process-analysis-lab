@@ -27,11 +27,11 @@ function generate_downloadlink(){
 
     var link = document.getElementById('downloadlink');
     var crlf = "%0D%0A";
-    var string=header+ y.length+crlf+"1";
+    var string=header+ Math.max(100000, y.length)+crlf+"1";
 
 
-    var quant = y.length/100;
-    for(var i = 0; i < y.length; i++){
+    var quant = Math.max(100000, y.length)/100;
+    for(var i = 0; i < Math.max(100000, y.length); i++){
         progress = i/quant;
 
         var tmp = crlf + y[i];

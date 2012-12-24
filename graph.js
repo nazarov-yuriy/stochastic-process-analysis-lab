@@ -57,6 +57,7 @@ var b = 1;
 var sigma = 1;
 var lambda = 1;
 var mu = 0;
+var tau = 0;
 
 //=== calc params ===
 var disc_int = 1;
@@ -332,6 +333,7 @@ function fill_process(){
     sigma  = parseFloat(form.param_sigma.value);
     lambda = parseFloat(form.param_lambda.value);
     mu     = parseFloat(form.param_mu.value);
+    tau    = parseFloat(form.param_tau.value);
 
     disc_int= parseFloat(form.param_int.value);
 
@@ -373,7 +375,7 @@ function calc_char(){
     m2 = 0;
     m3 = 0;
     m4 = 0;
-    for(var i=0; i<y.length; i++){
+    for(i=0; i<y.length; i++){
         m1 += y[i]-v1;
         m2 += (y[i]-v1)*(y[i]-v1);
         m3 += (y[i]-v1)*(y[i]-v1)*(y[i]-v1);
@@ -450,7 +452,7 @@ function in_interval(tau){
     var to = 1;
     var j_max = 0;
     for(var from=0; from<proc.length-1; from++){
-        while(proc[from]+tau < proc[to] && to<proc.length){
+        while(proc[from]+tau > proc[to] && to<proc.length){
             to++;
         }
         j[from] = to-from;
@@ -470,8 +472,8 @@ function replot(){
     calc_char();
 
     var res2 = 0;
-    //res2 = in_interval(from,to);
-    document.getElementById('res').textContent = "Мат.ожидание: "+v1+"\nДисперсия: "+m2+"\nКоэф. асимметрии: "+assim+"\nКоэф. эксцесса: "+exc;
+    res2 = in_interval(tau);
+    document.getElementById('res').textContent = "Мат.ожидание: "+v1+"\nДисперсия: "+m2+"\nКоэф. асимметрии: "+assim+"\nКоэф. эксцесса: "+exc+"\nМакс. число отсчётов на интервале наблюдения: "+res2;
 
     return false;
 }
