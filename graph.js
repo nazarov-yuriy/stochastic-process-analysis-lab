@@ -352,6 +352,43 @@ function fill_process(){
     status.textContent = "Сгенерировано за "+(end-start)+" мс.";
 }
 
+function calc_char(){
+    v1 = 0;
+    v2 = 0;
+    v3 = 0;
+    v4 = 0;
+    for(var i=0; i<y.length; i++){
+        v1 += y[i];
+        v2 += y[i]*y[i];
+        v3 += y[i]*y[i]*y[i];
+        v4 += y[i]*y[i]*y[i]*y[i];
+    }
+    v1 = v1/n;
+    v2 = v2/n;
+    v3 = v3/n;
+    v4 = v4/n;
+
+    m1 = 0;
+    m2 = 0;
+    m3 = 0;
+    m4 = 0;
+    for(var i=0; i<y.length; i++){
+        m1 += y[i]-v1;
+        m2 += (y[i]-v1)*(y[i]-v1);
+        m3 += (y[i]-v1)*(y[i]-v1)*(y[i]-v1);
+        m4 += (y[i]-v1)*(y[i]-v1)*(y[i]-v1)*(y[i]-v1);
+    }
+    m1 = m1/n;
+    m2 = m2/n;
+    m3 = m3/n;
+    m4 = m4/n;
+
+    sigma1 = Math.sqrt(m2);
+
+    assim = m3/(sigma1*sigma1*sigma1);
+    exc   = m4/(sigma1*sigma1*sigma1*sigma1)-3;
+}
+
 function graph_load(){
     form = document.forms['params_form'];
     status = document.getElementById('status');
@@ -416,43 +453,6 @@ function in_interval(from, to){
         }
     }
     return cnt;
-}
-
-function calc_char(){
-    v1 = 0;
-    v2 = 0;
-    v3 = 0;
-    v4 = 0;
-    for(var i=0; i<y.length; i++){
-        v1 += y[i];
-        v2 += y[i]*y[i];
-        v3 += y[i]*y[i]*y[i];
-        v4 += y[i]*y[i]*y[i]*y[i];
-    }
-    v1 = v1/n;
-    v2 = v2/n;
-    v3 = v3/n;
-    v4 = v4/n;
-
-    m1 = 0;
-    m2 = 0;
-    m3 = 0;
-    m4 = 0;
-    for(var i=0; i<y.length; i++){
-        m1 += y[i]-v1;
-        m2 += (y[i]-v1)*(y[i]-v1);
-        m3 += (y[i]-v1)*(y[i]-v1)*(y[i]-v1);
-        m4 += (y[i]-v1)*(y[i]-v1)*(y[i]-v1)*(y[i]-v1);
-    }
-    m1 = m1/n;
-    m2 = m2/n;
-    m3 = m3/n;
-    m4 = m4/n;
-
-    sigma1 = Math.sqrt(m2);
-
-    assim = m3/(sigma1*sigma1*sigma1);
-    exc   = m4/(sigma1*sigma1*sigma1*sigma1)-3;
 }
 
 //==== "generate" button handler. Generate and update graphs.
