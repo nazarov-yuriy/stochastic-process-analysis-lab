@@ -47,6 +47,7 @@ var dist_chart = [];
 //==== process data ====
 var y = [];
 var proc = [0];
+var j = [];
 var min_y = 0;
 var max_y = 0;
 //==== processes parameters ====
@@ -445,14 +446,17 @@ function update_graphs(){
     histogram_board.update();
 }
 
-function in_interval(from, to){
-    var cnt = 0;
-    for(var i=0; i<proc.length; i++){
-        if( from < proc[i] && proc[i]<to ){
-            cnt++;
+function in_interval(tau){
+    var to = 1;
+    var j_max = 0;
+    for(var from=0; from<proc.length-1; from++){
+        while(proc[from]+tau < proc[to] && to<proc.length){
+            to++;
         }
+        j[from] = to-from;
+        j_max = Math.max(j_max, to-from);
     }
-    return cnt;
+    return j_max;
 }
 
 //==== "generate" button handler. Generate and update graphs.
